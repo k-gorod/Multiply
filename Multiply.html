@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица умножения =)</title>
+</head>
+
+<body>
+    <div class="main">
+        <div class="main_header">Таблица умножения =)</div>
+        <div class="main_actions">
+            <div class="main_question"></div>
+            <input type="text" id="input" class="main_input">
+            <div class="main_buttons">
+                <div id="okayButton">Ответить</div>
+                <div id="nextButton">Следующий вопрос</div>
+            </div>
+        </div>
+        <div class="main_log log"></div>
+    </div>
+    
+    <script>
+        const main = document.getElementsByClassName('main')[0]
+        const input = document.getElementById('input');
+        const okButton = document.getElementById('okayButton');
+        const nextButton = document.getElementById('nextButton');
+        const question = document.getElementsByClassName('main_question')[0];
+        const log = document.getElementsByClassName('main_log')[0];
+        const arrOfGoodPhrases = ["Совершенно верно!", "Привильно, молодец!", "Да, правильный ответ!"];
+        const arrOfBadPhrases = ["Неа) Подумай еще)", "Не верно) Попробуй еще=)", "Не правильно) Давай еще!)"];
+        let [num1, num2] = [0, 0];
+
+        const randomNumber = () => {
+            return Math.round(Math.random() * 9)
+        }
+
+        const createQuestion = () => {
+            input.placeholder = "Напиши ответ"
+            input.value = "";
+            input.focus();
+            [num1, num2] = [randomNumber(), randomNumber()]
+            question.innerHTML = `${num1} * ${num2} = ?`
+        }
+
+        const getPhrase = (arr) => {
+            const phrase = arr[Math.floor(Math.random() * 3)];
+            return phrase !== input.placeholder ? phrase : getPhrase(arr)
+        }
+
+        const rightAnswer = () => {
+            createQuestion();
+            return getPhrase(arrOfGoodPhrases)
+        }
+
+        const wrongAnswer = () => {
+            input.focus();
+            return getPhrase(arrOfBadPhrases)
+        }
+
+        window.onload = () => {
+
+            document.body.style.height = `${window.innerHeight}px`
+
+            const onClick = () => {
+                const answerCorrect = ((input.value.replace(/[A-Za-zа-яА-Я]|\s/g, '') === "" + (num1 * num2)))
+                log.innerHTML = `${log.innerHTML}\n <div class="${answerCorrect ? "log-correct" : "log-fail"}" >${num1} * ${num2} = ${input.value}</div>`;
+                log.scrollTop = log.scrollHeight;
+                input.placeholder = answerCorrect ? rightAnswer() : wrongAnswer()
+            }
+
+            okButton.addEventListener('mouseup', onClick)
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === "Enter") {
+                    onClick();
+                }
+            })
+
+            nextButton.addEventListener('mouseup', (e) => {
+                log.innerHTML = `${log.innerHTML}\n <div class="log-fail" >Пропущен : ${num1} * ${num2} = ? </div>`;
+                log.scrollTop = log.scrollHeight;
+                createQuestion();
+            })
+
+            document.body.addEventListener('mouseup', ()=>{input.focus()})
+
+            createQuestion();
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            align-items: center;
+            justify-items: stretch;
+            font-family: cursive;
+        }
+
+        .main {
+            width: 500px;
+            height: 200px;
+            margin: auto;
+            display: grid;
+            grid-template-rows: 20% 80%;
+            grid-template-columns: 50% 50%;
+            grid-gap: 10px;
+        }
+
+        .main_header {
+            text-align: center;
+            grid-column: 1/3;
+        }
+
+        .main_actions {
+            display: grid;
+            grid-gap: 10px;
+        }
+        
+        .main_log {
+            max-width: 100%;
+            overflow-y: scroll;
+        }
+        
+        .main_log::-webkit-scrollbar {
+            display: none;
+        }
+
+        .main_buttons {
+            display: grid;
+            grid-gap: 10px;
+        }
+
+        .main_buttons > div {
+            text-align: center;
+            user-select: none;
+        }
+
+        #okayButton {
+            border-radius: 10px;
+            padding: 5px;
+            background: rgb(125, 255, 125);
+        }
+
+        #input {
+            padding: 10px;
+            border: solid 1px black;
+        }
+
+        .log-correct {
+            color: green;
+        }
+
+        .log-fail {
+            color: red;
+        }
+    </style>
+</body>
+
+</html>
